@@ -40,9 +40,11 @@ os.remove(temp_plist)
 
 devicetabs = []
 
-for x in info['values'].values():
-    devicetabs.append([x['value']['DeviceName'], x['value']['Tabs']])
-
+for uid in info['values'].values():
+    try:
+        devicetabs.append([uid['value']['DeviceName'], uid['value']['Tabs']])
+    except:
+        pass
 
 # Generate Alfred's XML
 

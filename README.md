@@ -5,3 +5,7 @@ This workflow retrieves iCloud tabs from the local `~/Library/SyncedPreferences/
 ## Usage
 
 `tabs` keyword by default.
+
+## Changes
+
+September 5 2013; updated to work when devices in the plist file don't have any tabs.
