@@ -4,7 +4,7 @@
 #
 
 import os
-import platform
+import subprocess
 import shutil
 import tempfile
 import plistlib
@@ -46,9 +46,17 @@ for uid in info['values'].values():
     except:
         pass
 
-# Generate Alfred's XML
+# Get local machine's host and computer names to exclude both from the list
 
-current_device = platform.node().split('.')[0]
+hostname_proc = subprocess.Popen(['scutil --get LocalHostName'], stdout=subprocess.PIPE, shell=True)
+(hostname_out, hostname_err) = hostname_proc.communicate()
+hostname = hostname_out.strip()
+
+computername_proc = subprocess.Popen(['scutil --get ComputerName'], stdout=subprocess.PIPE, shell=True)
+(computername_out, computername_err) = computername_proc.communicate()
+computername = computername_out.strip()
+
+# Generate Alfred's XML
 
 root = ET.Element('items')
 
@@ -56,7 +64,7 @@ for device in devicetabs:
 
     device_name = device[0]
 
-    if device_name != current_device:
+    if device_name not in [hostname, computername]:
 
         for tab in device[1]:
 
