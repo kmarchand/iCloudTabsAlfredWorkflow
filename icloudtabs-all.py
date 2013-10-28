@@ -63,7 +63,7 @@ for device in devicetabs:
 
     device_name = device[0]
 
-    if device_name not in [hostname, computername]:
+    if device_name not in [hostname, computername.decode("utf-8")]:
 
         for tab in device[1]:
 
