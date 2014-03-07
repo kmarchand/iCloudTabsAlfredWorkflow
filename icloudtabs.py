@@ -70,7 +70,7 @@ for device in devicetabs:
 
         for tab in device[1]:
 
-            if '{query}' not in tab['Title'].lower():
+            if '{query}'.lower() not in tab['Title'].lower():
                 continue
 
             item = ET.SubElement(root, 'item')
