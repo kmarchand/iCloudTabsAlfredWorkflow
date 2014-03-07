@@ -9,7 +9,8 @@ import shutil
 import tempfile
 import plistlib
 from datetime import datetime
-from mechanize import Browser
+import urllib2
+import re
 
 
 def create_temporary_copy(path):
@@ -49,11 +50,13 @@ for uid in info['values'].values():
 
 # Get local machine's host and computer names to exclude both from the list
 
-hostname_proc = subprocess.Popen(['scutil --get LocalHostName'], stdout=subprocess.PIPE, shell=True)
+hostname_proc = subprocess.Popen(
+    ['scutil --get LocalHostName'], stdout=subprocess.PIPE, shell=True)
 (hostname_out, hostname_err) = hostname_proc.communicate()
 hostname = hostname_out.strip()
 
-computername_proc = subprocess.Popen(['scutil --get ComputerName'], stdout=subprocess.PIPE, shell=True)
+computername_proc = subprocess.Popen(
+    ['scutil --get ComputerName'], stdout=subprocess.PIPE, shell=True)
 (computername_out, computername_err) = computername_proc.communicate()
 computername = computername_out.strip()
 
@@ -73,7 +76,8 @@ for device in devicetabs:
 
     alltabs[device_name] = device_tabs
 
-outfile = os.path.expanduser('~/Desktop/alltabs_%s.md' % datetime.now().isoformat()[:19])
+outfile = os.path.expanduser(
+    '~/Desktop/alltabs_%s.md' % datetime.now().isoformat()[:19])
 
 outtext = '''
 ## iCloud Tab Listing - %s
@@ -95,9 +99,9 @@ for device in alltabs.keys():
         print '\t processing: %s' % link
 
         try:
-            br = Browser()
-            br.open(link)
-            title = unicode(br.title())
+            req = urllib2.Request(link)
+            html = urllib2.urlopen(req).read()
+            title = unicode(re.search(r'<title>(.*?)</title>', html).group(1))
         except:
             title = link
         outtext += '* [%s](%s)\n' % (title, link)
@@ -107,4 +111,5 @@ for device in alltabs.keys():
 with open(outfile, 'w') as f:
     f.write(outtext.encode('utf8'))
 
-os.system('open -a Marked %s' % outfile)
+# Un-comment this if you want it to auto-open in Marked
+# os.system('open -a Marked %s' % outfile)
