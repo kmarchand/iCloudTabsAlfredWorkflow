@@ -54,7 +54,7 @@ alltabs = {}
 
 for device in devicetabs:
 
-    device_name = unicode(device[0], 'utf-8')
+    device_name = device[0]
 
     device_tabs = []
 
