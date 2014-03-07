@@ -4,7 +4,6 @@
 #
 
 import os
-import subprocess
 import shutil
 import tempfile
 import plistlib
@@ -55,7 +54,7 @@ alltabs = {}
 
 for device in devicetabs:
 
-    device_name = device[0]
+    device_name = unicode(device[0], 'utf-8')
 
     device_tabs = []
 
