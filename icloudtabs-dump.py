@@ -101,7 +101,7 @@ for device in alltabs.keys():
         try:
             req = urllib2.Request(link)
             html = urllib2.urlopen(req).read()
-            title = unicode(re.search(r'<title>(.*?)</title>', html).group(1))
+            title = unicode(re.search(r'<title>(.*?)</title>', html).group(1)).encode('UTF-8')
         except:
             title = link
         outtext += '* [%s](%s)\n' % (title, link)

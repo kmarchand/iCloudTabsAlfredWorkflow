@@ -48,11 +48,13 @@ for uid in info['values'].values():
 
 # Get local machine's host and computer names to exclude both from the list
 
-hostname_proc = subprocess.Popen(['scutil --get LocalHostName'], stdout=subprocess.PIPE, shell=True)
+hostname_proc = subprocess.Popen(
+    ['scutil --get LocalHostName'], stdout=subprocess.PIPE, shell=True)
 (hostname_out, hostname_err) = hostname_proc.communicate()
 hostname = hostname_out.strip()
 
-computername_proc = subprocess.Popen(['scutil --get ComputerName'], stdout=subprocess.PIPE, shell=True)
+computername_proc = subprocess.Popen(
+    ['scutil --get ComputerName'], stdout=subprocess.PIPE, shell=True)
 (computername_out, computername_err) = computername_proc.communicate()
 computername = computername_out.strip()
 
