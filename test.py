@@ -4,7 +4,6 @@
 #
 
 import os
-import subprocess
 import shutil
 import tempfile
 import plistlib
@@ -48,17 +47,6 @@ for uid in info['values'].values():
     except:
         pass
 
-# Get local machine's host and computer names to exclude both from the list
-
-hostname_proc = subprocess.Popen(
-    ['scutil --get LocalHostName'], stdout=subprocess.PIPE, shell=True)
-(hostname_out, hostname_err) = hostname_proc.communicate()
-hostname = hostname_out.strip()
-
-computername_proc = subprocess.Popen(
-    ['scutil --get ComputerName'], stdout=subprocess.PIPE, shell=True)
-(computername_out, computername_err) = computername_proc.communicate()
-computername = computername_out.strip()
 
 # Run the os 'open' command for each link found
 
@@ -88,7 +76,7 @@ Links from all devices:
 
 for device in alltabs.keys():
 
-    # print 'processing links from: %s' % device
+    print 'processing links from: %s' % device
 
     outtext += '### %s\n\n' % device
 
@@ -96,12 +84,13 @@ for device in alltabs.keys():
 
     for link in device_tabs:
 
-        # print '\t processing: %s' % link
+        print '\t processing: %s' % link
 
         try:
             req = urllib2.Request(link)
             html = urllib2.urlopen(req).read()
-            title = unicode(re.search(r'<title>(.*?)</title>', html).group(1)).encode('UTF-8')
+            title = unicode(
+                re.search(r'<title>(.*?)</title>', html).group(1), 'utf-8')
         except:
             title = link
         outtext += '* [%s](%s)\n' % (title, link)
