@@ -60,7 +60,7 @@ computername_proc = subprocess.Popen(
 (computername_out, computername_err) = computername_proc.communicate()
 computername = computername_out.strip()
 
-# Run the os 'open' command for each link found
+# Create a Markdown file listing all the tabs from "other" devices
 
 alltabs = {}
 
@@ -76,8 +76,15 @@ for device in devicetabs:
 
     alltabs[device_name] = device_tabs
 
+# outfile = os.path.expanduser(
+#     '~/Desktop/alltabs_%s.md' % datetime.now().isoformat()[:19])
+
+# Change date format so the resulting filename is compatible with Windows and Dropbox sync
+# see https://www.dropbox.com/en/help/145
+
 outfile = os.path.expanduser(
-    '~/Desktop/alltabs_%s.md' % datetime.now().isoformat()[:19])
+    '~/Desktop/alltabs_%s.md' % datetime.now().strftime('%Y-%m-%d %H.%M.%S'))	
+
 
 outtext = '''
 ## iCloud Tab Listing - %s
@@ -113,3 +120,7 @@ with open(outfile, 'w') as f:
 
 # Un-comment this if you want it to auto-open in Marked
 # os.system('open -a Marked %s' % outfile)
+
+# Un-comment this if you want it to auto-open in Marked 2
+# Marked 2 is the "successor" to Marked - see http://marked2app.com/
+# os.system('open -a "Marked 2" %s' % outfile)
