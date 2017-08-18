@@ -2,7 +2,7 @@
 
 This workflow retrieves iCloud tabs from the local `~/Library/SyncedPreferences/com.apple.Safari.plist` file for all connected iCloud devices and displays the links.  Tabs from current device are excluded.
 
-**NOTE**:  This doesn't work in macOS 10.13 High Sierra since the contents of com.apple.Safari.plist are now encrypted.
+**NOTE**:  This doesn't work in macOS 10.12 Sierra or newer since the contents of com.apple.Safari.plist are now encrypted.
 
 
 ## Usage
