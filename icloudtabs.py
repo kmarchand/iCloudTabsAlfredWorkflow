@@ -6,45 +6,76 @@
 import os
 import subprocess
 import shutil
-import tempfile
-import plistlib
 import xml.etree.ElementTree as ET
+import getpass
+import sqlite3
 
 
-def create_temporary_copy(path):
-    temp_dir = tempfile.gettempdir()
-    temp_path = os.path.join(temp_dir, 'safari_sync_plist_copy.plist')
-    shutil.copy2(os.path.expanduser(path), temp_path)
-    return temp_path
+local_user = getpass.getuser()
+cloudtabs_db = '/Users/%s/Library/Safari/CloudTabs.db' % local_user
+
+conn = sqlite3.connect(cloudtabs_db)
+cursor = conn.cursor()
+
+cursor.execute("select device_uuid, device_name from cloud_tab_devices")
+cloud_tab_devices = cursor.fetchall()
+
+# Structure of cloud_tab_devices:
+#
+# [
+#     (device1_uuid, device1_name),
+#     (device2_uuid, device2_name)
+# ]
+
+cloud_tab_devices_lookup = {}
+
+for device in cloud_tab_devices:
+        cloud_tab_devices_lookup[device[0]] = device[1]
+
+cloud_tab_devices_uuid_list = []
+
+for device in cloud_tab_devices:
+        cloud_tab_devices_uuid_list.append(device[0])
+
+cursor.execute("select device_uuid, title, url from cloud_tabs")
+cloud_tabs = cursor.fetchall()
+
+# Structure of cloud_tabs:
+#
+# [
+#     (device_uuid, tab_title, tab_url),
+#     (device_uuid, tab_title, tab_url),
+# ]
+
+conn.close()
 
 
-# make a temp copy of the plist file
+# Structure needed for all_device_tabs:
+#
+# all_device_tabs = [
+#     ['device1_name', [
+#         {'Title': 'device1_tab1_title', 'URL': 'device1_tab1_url'},
+#         {'Title': 'device1_tab1_title', 'URL': 'device1_tab1_url'}
+#     ]
+#     ]
+#     ['device2_name', [
+#         {'Title': 'device2_tab1_title', 'URL': 'device2_tab1_url'},
+#         {'Title': 'device2_tab1_title', 'URL': 'device2_tab1_url'}
+#     ]
+#     ]
+# ]
 
-temp_plist = create_temporary_copy(
-    '~/Library/SyncedPreferences/com.apple.Safari.plist')
+all_device_tabs = []
 
-# Use plutil to convert binary plist to xml
+for device_uuid in cloud_tab_devices_uuid_list:
+    lookup_name = cloud_tab_devices_lookup[device_uuid]
+    device_tabs = []
+    for tab in cloud_tabs:
+        if tab[0] == device_uuid:
+            tabinfo = {'Title': tab[1], 'URL': tab[2]}
+            device_tabs.append(tabinfo)
+    all_device_tabs.append([lookup_name, device_tabs])
 
-os.system('plutil -convert xml1 %s' % temp_plist)
-
-
-# Use plistlib to convert plist XML to a dictionary
-
-info = plistlib.readPlist(temp_plist)
-
-# Clean up (delete) temp file
-
-os.remove(temp_plist)
-
-# Pull out the device elements from the info dict for easier parsing later
-
-devicetabs = []
-
-for uid in info['values'].values():
-    try:
-        devicetabs.append([uid['value']['DeviceName'], uid['value']['Tabs']])
-    except:
-        pass
 
 # Get local machine's host and computer names to exclude both from the list
 
@@ -62,7 +93,7 @@ computername = computername_out.strip()
 
 root = ET.Element('items')
 
-for device in devicetabs:
+for device in all_device_tabs:
 
     device_name = device[0]
 
